@@ -7,7 +7,7 @@ def test_format_stars_uses_five_slots() -> None:
     assert format_stars(5) == "★★★★★"
 
 
-def test_format_reply_contains_type_original_text_comment_and_all_ratings() -> None:
+def test_format_reply_omits_type_and_original_text_but_keeps_review_and_ratings() -> None:
     classification = Classification(
         is_poem=True,
         type="senryu",
@@ -28,8 +28,9 @@ def test_format_reply_contains_type_original_text_comment_and_all_ratings() -> N
 
     body = format_reply(classification, "元の\n作品", review)
 
-    assert "作品種別: 川柳" in body
-    assert "元の\n作品" in body
+    assert "作品種別" not in body
+    assert "作品:" not in body
+    assert "元の\n作品" not in body
     assert "季節の気配が伝わります。" in body
     assert "情景: ★★★★☆" in body
     assert "ユーモア・風刺: ★★★☆☆" in body

@@ -2,12 +2,7 @@
 
 from __future__ import annotations
 
-from .models import Classification, PoemType, Review
-
-TYPE_LABELS = {
-    PoemType.HAIKU: "俳句",
-    PoemType.SENRYU: "川柳",
-}
+from .models import Classification, Review
 
 
 def format_stars(score: int) -> str:
@@ -18,19 +13,12 @@ def format_stars(score: int) -> str:
     return "★" * score + "☆" * (5 - score)
 
 
-def format_reply(classification: Classification, original_text: str, review: Review) -> str:
-    """Build the reply body while keeping the original poem text unchanged."""
-
-    try:
-        type_label = TYPE_LABELS[classification.type]
-    except KeyError as exc:
-        raise ValueError("only haiku and senryu can be formatted as replies") from exc
+def format_reply(_classification: Classification, _original_text: str, review: Review) -> str:
+    """Build a review-only reply; the poem is shown in the attached image."""
 
     stars = review.ratings.as_stars()
     rating_lines = "\n".join(f"{label}: {value}" for label, value in stars.items())
     return (
-        f"作品種別: {type_label}\n\n"
-        f"作品:\n{original_text}\n\n"
         f"講評:\n{review.comment}\n\n"
         f"評価:\n{rating_lines}\n"
         f"総合評価: {format_stars(review.overall)}"
