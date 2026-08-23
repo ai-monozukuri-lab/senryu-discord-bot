@@ -55,11 +55,11 @@ python3.12 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-Token と OpenAI API キーを現在のシェルにだけ設定して起動する。
+サンプルをコピーし、ローカル用の Token と OpenAI API キーを `.env.local` に設定して起動する。`.env.local` は Git 管理対象外で、`bot.main` がローカル起動時だけ読み込む。
 
 ```bash
-export DISCORD_TOKEN='ここにDiscord Bot Token'
-export OPENAI_API_KEY='ここにOpenAI API key'
+cp .env.local.example .env.local
+open -a TextEdit .env.local
 .venv/bin/python -m bot.main
 ```
 

@@ -33,25 +33,23 @@ python -m pip install -r requirements.txt
 
 以降のコマンドは `.venv` を有効にした同じターミナルで実行する。別のターミナルで作業する場合は `source .venv/bin/activate` を繰り返す。
 
-## 2. 環境変数を現在のシェルへ設定する
+## 2. `.env.local` を作る
 
-このアプリは `.env` ファイルを自動読み込みしない。秘密値をファイルへ保存せず、開発用 Token と OpenAI API キーを現在のシェルへ一時設定する。
-
-```bash
-export DISCORD_TOKEN='開発用Discord Bot Token'
-export OPENAI_API_KEY='OpenAI API key'
-```
-
-必要に応じてモデルや TTL だけ上書きする。
+ローカルの直接 Python 起動では、リポジトリルートの `.env.local` を自動読み込みする。サンプルをコピーして、開発用 Token と OpenAI API キーを入力する。
 
 ```bash
-export OPENAI_CLASSIFICATION_MODEL='gpt-5.6'
-export OPENAI_REVIEW_MODEL='gpt-5.6'
-export DEDUP_TTL_SECONDS='900'
-export DEDUP_MAX_ENTRIES='10000'
+cp .env.local.example .env.local
+open -a TextEdit .env.local
 ```
 
-Token や API キーをシェル履歴、スクリーンショット、Git 管理ファイルへ残さない。値を変更したら、起動中のプロセスを停止して再起動する。
+最低限、次の 2 つを設定する。
+
+```dotenv
+DISCORD_TOKEN=開発用Discord Bot Token
+OPENAI_API_KEY=OpenAI API key
+```
+
+モデルや TTL は `.env.local.example` の既定値を必要に応じて変更する。`.env.local` は `.gitignore` と `.dockerignore` で除外され、`bot.main` は既存のシェル環境変数を `.env.local` より優先する。Token や API キーをシェル履歴、スクリーンショット、Git 管理ファイルへ残さない。値を変更したら、起動中のプロセスを停止して再起動する。
 
 ## 3. Bot を起動する
 
@@ -105,7 +103,7 @@ docker run --rm \
   senryu-discord-bot:local
 ```
 
-ホスト側で先に `export` した値だけをコンテナへ渡す。Docker 実行中も `Ctrl-C` で停止できる。ローカル Python 実行と Docker 実行を同時に行わない。
+これは本番に近い任意確認用であり、通常のローカル開発では `.env.local` を使った直接 Python 起動を推奨する。Docker 実行時はホスト側の `export` 済み変数だけをコンテナへ渡す。Docker 実行中も `Ctrl-C` で停止できる。ローカル Python 実行と Docker 実行を同時に行わない。
 
 ## 7. 停止・再起動・後片付け
 
@@ -118,7 +116,7 @@ docker run --rm \
 
 ### `DISCORD_TOKEN is required` または `OPENAI_API_KEY is required`
 
-環境変数が現在のシェルに存在しない。`export` を実行した同じターミナルから `python -m bot.main` を起動する。.env ファイルへ書いただけでは読み込まれない。
+`.env.local` がリポジトリルートに存在するか、`DISCORD_TOKEN` と `OPENAI_API_KEY` が空でないか確認する。`.env` や別ディレクトリのファイルは読み込まれない。既存のシェル環境変数がある場合はそちらが優先される。
 
 ### Bot がオンラインだが反応しない
 

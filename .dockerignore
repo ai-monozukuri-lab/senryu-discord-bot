@@ -6,6 +6,7 @@
 .ruff_cache
 __pycache__
 *.py[cod]
+.env.local
 tests
 docs
 *.md

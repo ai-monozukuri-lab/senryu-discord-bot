@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
+from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
 from .ai import OpenAIAnalyzer
@@ -33,11 +35,19 @@ def create_bot(settings: Settings) -> SenryuBot:
     return SenryuBot(service=service, deduplicator=deduplicator)
 
 
+def load_local_environment(path: Path = Path(".env.local")) -> None:
+    """Load local-only variables without overriding an existing shell environment."""
+
+    if path.is_file():
+        load_dotenv(dotenv_path=path, override=False)
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
+    load_local_environment()
     settings = Settings.from_env()
     create_bot(settings).run(settings.discord_token)
 
