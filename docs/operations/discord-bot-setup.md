@@ -65,6 +65,8 @@ export OPENAI_API_KEY='ここにOpenAI API key'
 
 起動ログに Bot のユーザー名が表示され、Discord のサーバー一覧で Bot がオンラインになれば Gateway 接続は成功している。OpenAI API キーは [API Keys](https://platform.openai.com/api-keys) で発行する。
 
+コード変更を続けながらローカル Gateway を起動する場合は [ローカル Bot 開発手順](../development/local-bot.md) を参照する。
+
 ## 6. Railway へ本番デプロイする
 
 1. Railway で GitHub リポジトリを接続した Service を 1 つ作る。

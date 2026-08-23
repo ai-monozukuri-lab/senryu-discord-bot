@@ -26,6 +26,8 @@ python -m venv .venv
 .venv/bin/ruff check bot tests
 ```
 
+実際の Discord Gateway に接続して開発する場合は [ローカル Bot 開発手順](local-bot.md) を使う。本番 Railway と同じ Bot Token を同時に起動しない。
+
 テストは OpenAI、Discord Gateway、Railway へ接続せず、AI アダプタと Discord メッセージを fake に差し替える。対象テストが検証する範囲は、型契約、星表示、TTL 重複防止、固定テンプレート合成、一次判定後の呼び出し回数、返信本文・添付ファイルである。
 
 ## コード境界
