@@ -61,8 +61,16 @@ class SenryuBot(discord.Client):
                 io.BytesIO(result.image_bytes),
                 filename=f"senryu-{message.id}.png",
             )
-            await message.reply(content=chunks[0], file=image_file, mention_author=False)
+            await message.reply(
+                content=chunks[0],
+                file=image_file,
+                mention_author=False,
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
             for chunk in chunks[1:]:
-                await message.channel.send(chunk)
+                await message.channel.send(
+                    chunk,
+                    allowed_mentions=discord.AllowedMentions.none(),
+                )
         except Exception:
             logger.exception("Failed to process Discord message %s", message.id)

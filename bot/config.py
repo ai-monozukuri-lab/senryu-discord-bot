@@ -60,6 +60,8 @@ class Settings:
             return parsed
 
         font_value = values.get("FONT_PATH", "").strip()
+        template_value = values.get("IMAGE_TEMPLATE_PATH", "").strip()
+        default_template = Path(__file__).resolve().parent.parent / "assets" / "senryu_template.png"
         return cls(
             discord_token=required("DISCORD_TOKEN"),
             openai_api_key=required("OPENAI_API_KEY"),
@@ -67,12 +69,7 @@ class Settings:
                 values.get("OPENAI_CLASSIFICATION_MODEL", "gpt-5.6").strip() or "gpt-5.6"
             ),
             review_model=values.get("OPENAI_REVIEW_MODEL", "gpt-5.6").strip() or "gpt-5.6",
-            image_template_path=Path(
-                values.get(
-                    "IMAGE_TEMPLATE_PATH",
-                    str(Path(__file__).resolve().parent.parent / "assets" / "senryu_template.png"),
-                )
-            ),
+            image_template_path=Path(template_value or default_template),
             font_path=Path(font_value) if font_value else None,
             dedup_ttl_seconds=positive_float("DEDUP_TTL_SECONDS", 15 * 60),
             dedup_max_entries=positive_int("DEDUP_MAX_ENTRIES", 10_000),
