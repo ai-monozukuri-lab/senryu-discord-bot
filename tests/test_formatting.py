@@ -20,18 +20,18 @@ def test_format_reply_omits_type_and_original_text_but_keeps_review_and_ratings(
             "情景": 4,
             "余韻": 5,
             "独創性": 4,
-            "言葉選び": 4,
-            "ユーモア・風刺": 3,
         },
         overall=4,
     )
 
     body = format_reply(classification, "元の\n作品", review)
 
+    assert body.splitlines()[0] == "川柳を検出しました！"
+    assert body.index("評価") < body.index("情景:")
+    assert body.index("総合評価:") < body.index("講評")
     assert "作品種別" not in body
     assert "作品:" not in body
     assert "元の\n作品" not in body
     assert "季節の気配が伝わります。" in body
     assert "情景: ★★★★☆" in body
-    assert "ユーモア・風刺: ★★★☆☆" in body
     assert "総合評価: ★★★★☆" in body

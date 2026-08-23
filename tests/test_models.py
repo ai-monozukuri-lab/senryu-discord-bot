@@ -36,20 +36,15 @@ def test_ratings_keep_the_public_japanese_keys_and_render_stars() -> None:
         情景=4,
         余韻=5,
         独創性=4,
-        言葉選び=3,
-        **{"ユーモア・風刺": 2},
     )
 
     assert ratings.model_dump(by_alias=True) == {
         "情景": 4,
         "余韻": 5,
         "独創性": 4,
-        "言葉選び": 3,
-        "ユーモア・風刺": 2,
     }
     assert ratings.as_stars()["情景"] == "★★★★☆"
     assert ratings.as_stars()["余韻"] == "★★★★★"
-    assert ratings.as_stars()["ユーモア・風刺"] == "★★☆☆☆"
 
 
 def test_review_rejects_scores_outside_one_to_five() -> None:
@@ -60,8 +55,6 @@ def test_review_rejects_scores_outside_one_to_five() -> None:
                 "情景": 6,
                 "余韻": 5,
                 "独創性": 4,
-                "言葉選び": 4,
-                "ユーモア・風刺": 3,
             },
             overall=4,
         )

@@ -46,15 +46,13 @@ def _stars(score: int) -> str:
 
 
 class Ratings(BaseModel):
-    """The five public rating dimensions, preserving their Japanese JSON keys."""
+    """The three public rating dimensions, preserving their Japanese JSON keys."""
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     scene: int = Field(alias="情景", ge=1, le=5)
     aftertaste: int = Field(alias="余韻", ge=1, le=5)
     originality: int = Field(alias="独創性", ge=1, le=5)
-    word_choice: int = Field(alias="言葉選び", ge=1, le=5)
-    humor_satire: int = Field(alias="ユーモア・風刺", ge=1, le=5)
 
     def as_stars(self) -> dict[str, str]:
         """Return the public Japanese labels mapped to five-slot star strings."""
@@ -63,8 +61,6 @@ class Ratings(BaseModel):
             "情景": _stars(self.scene),
             "余韻": _stars(self.aftertaste),
             "独創性": _stars(self.originality),
-            "言葉選び": _stars(self.word_choice),
-            "ユーモア・風刺": _stars(self.humor_satire),
         }
 
 

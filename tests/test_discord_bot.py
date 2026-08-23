@@ -41,8 +41,6 @@ def _result() -> AnalysisResult:
                 "情景": 4,
                 "余韻": 5,
                 "独創性": 4,
-                "言葉選び": 4,
-                "ユーモア・風刺": 3,
             },
             overall=4,
         ),
@@ -76,6 +74,8 @@ async def test_bot_replies_once_for_a_target_and_suppresses_duplicates() -> None
 
     assert service.calls == ["春の句"]
     assert len(message.replies) == 1
+    assert message.replies[0]["content"].splitlines()[0] == "俳句を検出しました！"
+    assert "評価" in message.replies[0]["content"]
     assert "作品種別" not in message.replies[0]["content"]
     assert "作品:" not in message.replies[0]["content"]
     assert "講評です。" in message.replies[0]["content"]
