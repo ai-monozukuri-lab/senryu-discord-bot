@@ -18,7 +18,7 @@ DEFAULT_DEDUP_MAX_ENTRIES = 10_000
 
 
 class ConfigurationError(ValueError):
-    """Raised when a required or numeric setting is invalid."""
+    """Raised when a required secret is missing."""
 
 
 @dataclass(frozen=True)

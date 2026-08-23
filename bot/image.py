@@ -1,4 +1,4 @@
-"""Deterministic Pillow composition over a fixed Japanese-style template."""
+"""Pillow composition over a fixed Japanese-style template."""
 
 from __future__ import annotations
 
@@ -12,7 +12,12 @@ class ImageCompositionError(RuntimeError):
     """Raised when the template or Japanese font cannot be used."""
 
 
+BUNDLED_FONT_PATH = (
+    Path(__file__).resolve().parent.parent / "assets" / "fonts" / "YujiSyuku-Regular.ttf"
+)
+
 DEFAULT_FONT_CANDIDATES = (
+    str(BUNDLED_FONT_PATH),
     "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
     "/System/Library/Fonts/ヒラギノ明朝 ProN.ttc",
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
@@ -22,8 +27,24 @@ DEFAULT_FONT_CANDIDATES = (
 )
 
 
+def split_vertical_columns(text: str, *, max_chars: int) -> list[list[str]]:
+    """Split source lines into vertical columns, preserving right-to-left order."""
+
+    if max_chars <= 0:
+        raise ValueError("max_chars must be positive")
+    columns: list[list[str]] = []
+    for source_line in text.splitlines() or [text]:
+        characters = list(source_line)
+        if not characters:
+            columns.append([])
+            continue
+        for start in range(0, len(characters), max_chars):
+            columns.append(characters[start : start + max_chars])
+    return columns or [[]]
+
+
 class TemplateImageComposer:
-    """Load one fixed template and draw the original poem text onto it."""
+    """Load one fixed template and draw the original poem text vertically."""
 
     def __init__(
         self,
@@ -55,24 +76,6 @@ class TemplateImageComposer:
         except Exception as exc:
             raise ImageCompositionError("Japanese font could not be loaded") from exc
 
-    @staticmethod
-    def _wrap_lines(draw: ImageDraw.ImageDraw, text: str, font, max_width: int) -> list[str]:
-        wrapped: list[str] = []
-        for source_line in text.splitlines() or [text]:
-            if not source_line:
-                wrapped.append("")
-                continue
-            current = ""
-            for character in source_line:
-                candidate = current + character
-                if current and draw.textlength(candidate, font=font) > max_width:
-                    wrapped.append(current)
-                    current = character
-                else:
-                    current = candidate
-            wrapped.append(current)
-        return wrapped
-
     def compose(self, text: str) -> bytes:
         if not self._template_path.exists():
             raise ImageCompositionError(f"template file not found: {self._template_path}")
@@ -91,23 +94,24 @@ class TemplateImageComposer:
         overlay_draw = ImageDraw.Draw(overlay, "RGBA")
         draw = ImageDraw.Draw(canvas, "RGBA")
         font_size = 96
-        font = self._load_font(font_size)
-        max_width = int(canvas.width * 0.72)
-        lines = self._wrap_lines(draw, text, font, max_width)
-        while len(lines) > 8 and font_size > 36:
-            font_size -= 4
-            font = self._load_font(font_size)
-            lines = self._wrap_lines(draw, text, font, max_width)
+        max_width = int(canvas.width * 0.64)
+        max_height = int(canvas.height * 0.70)
+        column_gap = 18
 
-        line_spacing = int(font_size * 0.45)
-        bboxes = [draw.textbbox((0, 0), line or " ", font=font) for line in lines]
-        text_width = max((bbox[2] - bbox[0] for bbox in bboxes), default=0)
-        text_height = sum(bbox[3] - bbox[1] for bbox in bboxes) + line_spacing * max(
-            len(lines) - 1, 0
-        )
+        while True:
+            font = self._load_font(font_size)
+            glyph_advance = int(font_size * 1.16)
+            max_chars = max(1, max_height // glyph_advance)
+            columns = split_vertical_columns(text, max_chars=max_chars)
+            column_width = int(font_size * 1.22)
+            text_width = len(columns) * column_width - column_gap
+            text_height = max(len(column) for column in columns) * glyph_advance
+            if (text_width <= max_width and text_height <= max_height) or font_size <= 40:
+                break
+            font_size -= 4
+
         left = (canvas.width - text_width) // 2
         top = (canvas.height - text_height) // 2
-
         padding = 42
         overlay_draw.rounded_rectangle(
             (
@@ -122,13 +126,21 @@ class TemplateImageComposer:
         canvas = Image.alpha_composite(canvas, overlay)
         draw = ImageDraw.Draw(canvas, "RGBA")
 
-        cursor_y = top
-        for line, bbox in zip(lines, bboxes, strict=True):
-            line_width = bbox[2] - bbox[0]
-            cursor_x = (canvas.width - line_width) // 2
-            draw.text((cursor_x + 3, cursor_y + 3), line, font=font, fill=(255, 250, 240, 150))
-            draw.text((cursor_x, cursor_y), line, font=font, fill=(48, 38, 31, 255))
-            cursor_y += bbox[3] - bbox[1] + line_spacing
+        right = left + text_width
+        for column_index, column in enumerate(columns):
+            column_left = right - (column_index + 1) * column_width
+            for character_index, character in enumerate(column):
+                bbox = draw.textbbox((0, 0), character or " ", font=font)
+                glyph_width = bbox[2] - bbox[0]
+                draw_x = column_left + (column_width - glyph_width) // 2 - bbox[0]
+                draw_y = top + character_index * glyph_advance - bbox[1]
+                draw.text(
+                    (draw_x + 3, draw_y + 3),
+                    character,
+                    font=font,
+                    fill=(255, 250, 240, 150),
+                )
+                draw.text((draw_x, draw_y), character, font=font, fill=(48, 38, 31, 255))
 
         output = BytesIO()
         canvas.save(output, format="PNG", optimize=True)

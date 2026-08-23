@@ -36,7 +36,7 @@ python -m venv .venv
 - `bot/ai.py`: Responses API の一次判定・二次講評アダプタ。本文は XML 風の区切りでデータとして渡し、本文内の命令をプロンプト命令として扱わない。各レスポンス後に `bot/usage.py` で usage と推定料金をログへ出すが、本文はログへ出さない。
 - `bot/usage.py`: Responses API の input/output/total、cached/cache-write/reasoning 内訳を抽出し、モデル別の USD/1M token 料金から推定額を計算する。未知モデルは金額 `null` で呼び出しを継続する。
 - `bot/service.py`: 「一次判定 → 対象時だけ二次講評 → Pillow 合成」の唯一のオーケストレーション境界。ここへ文字数や五・七・五のローカル判定を追加しない。
-- `bot/image.py`: 固定テンプレートへ元本文を正確に描く Pillow 層。`normalized_lines` は使わず、Discord 本文を正本とする。
+- `bot/image.py`: 固定テンプレートへ元本文を正確に描く Pillow 層。`normalized_lines` は使わず、Discord 本文を正本とする。Yuji Syuku で句ごとの列を上→下、列を右→左へ描く。
 - `bot/discord_bot.py`: Bot 投稿・空本文・TTL 重複を除外し、対象結果だけを reply する。返信本文は講評・評価だけで、作品種別と元本文は添付画像だけに出す。AI/合成エラー時は部分投稿を行わない。
 - `bot/config.py` と `bot/main.py`: 秘密2つだけを環境変数から読み、`gpt-5.6-luna` / `reasoning.effort=max`、TTL、テンプレートなどの非秘密設定はコード定数で起動配線する。秘密値をログやドキュメントへ出さない。
 

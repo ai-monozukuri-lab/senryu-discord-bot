@@ -4,7 +4,7 @@ import pytest
 from PIL import Image, ImageFont
 
 import bot.image as image_module
-from bot.image import ImageCompositionError, TemplateImageComposer
+from bot.image import ImageCompositionError, TemplateImageComposer, split_vertical_columns
 
 
 def _make_template(path) -> None:
@@ -48,3 +48,14 @@ def test_compose_fails_clearly_when_the_font_is_missing(tmp_path) -> None:
 
     with pytest.raises(ImageCompositionError, match="font"):
         composer.compose("poem")
+
+
+def test_vertical_columns_keep_each_poem_line_top_to_bottom_and_right_to_left() -> None:
+    columns = split_vertical_columns("春の雨\n傘のとなりに\n猫の影", max_chars=7)
+
+    assert columns == [list("春の雨"), list("傘のとなりに"), list("猫の影")]
+
+
+def test_bundled_calligraphy_font_is_the_default_candidate() -> None:
+    assert image_module.BUNDLED_FONT_PATH.exists()
+    assert str(image_module.BUNDLED_FONT_PATH) == image_module.DEFAULT_FONT_CANDIDATES[0]

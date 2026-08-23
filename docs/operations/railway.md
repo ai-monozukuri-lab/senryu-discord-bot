@@ -72,5 +72,5 @@ railway logs --service "$RAILWAY_SERVICE_ID" --environment production -n 100
 ## 障害時の確認
 
 - `DISCORD_TOKEN` または `OPENAI_API_KEY` が未設定なら起動時に終了する。
-- フォントが見つからない場合、対象投稿は返信せずログに `font` エラーを出す。Docker イメージでは `fonts-noto-cjk` を導入済み。
+- フォントが見つからない場合、対象投稿は返信せずログに `font` エラーを出す。Docker イメージには同梱の Yuji Syuku と OFL ライセンスを含める。
 - 画像テンプレートが見つからない場合、対象投稿は返信せずログに `template` エラーを出す。

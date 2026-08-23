@@ -16,6 +16,11 @@ read_when:
 - 生成サイズ: 1254×1254 の RGBA PNG。Bot は Pillow で 1024×1024 に整形して本文を合成する。
 - 生成方式: Codex の組み込み画像生成ツールで生成し、生成画像をリポジトリへコピー。
 - 日本語本文: 画像生成には含めず、`bot/image.py` が元の Discord 本文を正確に描画する。
+- 本文フォント: `assets/fonts/YujiSyuku-Regular.ttf`（Yuji Syuku / 佑字「肅」）。書家の原字をもとにした毛筆寄りの書体で、SIL Open Font License 1.1。
+- フォントライセンス: `assets/fonts/OFL-Yuji.txt`。取得元コミットは `assets/fonts/YujiSyuku-SOURCE_COMMIT.txt` に記録する。
+- 本文レイアウト: 句ごとの列を上から下へ描き、列は右から左へ並べる日本語縦書き。
+
+フォントの公式配布元は [Kinutafontfactory/Yuji](https://github.com/Kinutafontfactory/Yuji) である。フォントを更新するときは TTF と OFL ライセンス、取得元コミットを同じ変更に含める。
 
 ## 再生成プロンプト
 
