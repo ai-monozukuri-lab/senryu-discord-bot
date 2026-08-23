@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
 
 
 class ConfigurationError(ValueError):
@@ -18,13 +18,15 @@ class Settings:
     openai_api_key: str
     classification_model: str = "gpt-5.6"
     review_model: str = "gpt-5.6"
-    image_template_path: Path = Path(__file__).resolve().parent.parent / "assets" / "senryu_template.png"
+    image_template_path: Path = (
+        Path(__file__).resolve().parent.parent / "assets" / "senryu_template.png"
+    )
     font_path: Path | None = None
     dedup_ttl_seconds: float = 15 * 60
     dedup_max_entries: int = 10_000
 
     @classmethod
-    def from_env(cls, env: Mapping[str, str] | None = None) -> "Settings":
+    def from_env(cls, env: Mapping[str, str] | None = None) -> Settings:
         values = os.environ if env is None else env
 
         def required(name: str) -> str:
@@ -61,7 +63,9 @@ class Settings:
         return cls(
             discord_token=required("DISCORD_TOKEN"),
             openai_api_key=required("OPENAI_API_KEY"),
-            classification_model=values.get("OPENAI_CLASSIFICATION_MODEL", "gpt-5.6").strip() or "gpt-5.6",
+            classification_model=(
+                values.get("OPENAI_CLASSIFICATION_MODEL", "gpt-5.6").strip() or "gpt-5.6"
+            ),
             review_model=values.get("OPENAI_REVIEW_MODEL", "gpt-5.6").strip() or "gpt-5.6",
             image_template_path=Path(
                 values.get(

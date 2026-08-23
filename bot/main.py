@@ -34,7 +34,10 @@ def create_bot(settings: Settings) -> SenryuBot:
 
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
     settings = Settings.from_env()
     create_bot(settings).run(settings.discord_token)
 

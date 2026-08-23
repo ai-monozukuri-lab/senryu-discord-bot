@@ -1,0 +1,11 @@
+.git
+.github
+.context
+.agents
+.pytest_cache
+.ruff_cache
+__pycache__
+*.py[cod]
+tests
+docs
+*.md
