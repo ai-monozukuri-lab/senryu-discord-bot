@@ -17,6 +17,18 @@ CLI での初回プロジェクト作成、既存プロジェクトへの接続�
 
 production のインスタンスは原則 1 つにする。重複処理キャッシュはプロセス内メモリだけに保持するため、複数インスタンスを起動すると同じ投稿を二重処理する可能性がある。
 
+## リソース構成
+
+production Service は Free/Trial 枠を優先し、次の上限で設定している。
+
+- レプリカ: 1
+- CPU 上限: 1 vCPU
+- メモリ上限: 0.5 GB（約 512 MB）
+
+Railway は実使用量で課金し、Replica Limits は急な使用量の上限を設定するもの。上限を下げても常時稼働の実使用量やプラン料金が自動的に 0 になるわけではなく、低すぎる上限では Bot がクラッシュする可能性がある。CPU/RAM の実測値は `railway metrics --cpu --memory --since 1h --json` または Dashboard の Metrics で確認する。
+
+公式の費用・上限の説明は [Cost Control](https://docs.railway.com/pricing/cost-control) と [Pricing Plans](https://docs.railway.com/pricing/plans) を参照する。
+
 ## Railway 環境変数
 
 必須:

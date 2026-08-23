@@ -158,6 +158,10 @@ railway logs \
 
 Dashboard を開く場合は `railway open` を使う。デプロイ失敗時は `railway logs --build` と Dockerfile のビルドログを確認する。Token や API キーがログへ出ていないことも確認する。
 
+## リソース上限
+
+`railway scale` はリージョンごとのレプリカ数を変更するコマンドであり、CPU/RAM の上限設定とは別である。CPU/RAM は Dashboard の Service → Settings → Deploy → Replica Limits で設定する。現在の Bot は 1 replica、1 vCPU、0.5 GB RAM に設定している。変更後は `railway metrics --cpu --memory --since 10m --json` と Service status を確認する。
+
 ## 8. GitHub Actions へ接続する
 
 `.github/workflows/deploy.yml` は GitHub Actions の `Run workflow` または `gh workflow run` による手動実行で、テスト、lint、Railway CLI デプロイを実行する。次の GitHub Secrets を登録する。
