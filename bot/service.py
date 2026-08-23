@@ -30,11 +30,17 @@ class PoemAnalysisService:
 
     async def analyze(self, text: str) -> AnalysisResult | None:
         classification = await self._ai.classify(text)
-        if not classification.is_target:
+        if (
+            not classification.is_target
+            or not classification.extracted_text
+            or classification.extracted_text not in text
+        ):
             return None
 
         review = await self._ai.review(text, classification)
-        image_bytes = await asyncio.to_thread(self._composer.compose, text)
+        image_bytes = await asyncio.to_thread(
+            self._composer.compose, classification.extracted_text
+        )
         return AnalysisResult(
             classification=classification,
             review=review,

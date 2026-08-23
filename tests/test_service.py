@@ -47,6 +47,7 @@ async def test_non_poem_stops_after_the_first_openai_call() -> None:
         is_poem=False,
         type="other",
         confidence=0.95,
+        extracted_text="",
         normalized_lines=["説明"],
     )
     ai = FakeAI(classification, _review())
@@ -60,24 +61,63 @@ async def test_non_poem_stops_after_the_first_openai_call() -> None:
 
 
 @pytest.mark.asyncio
-async def test_poem_uses_one_review_call_and_composes_the_original_text() -> None:
+async def test_poem_uses_extracted_text_for_the_review_image() -> None:
     classification = Classification(
         is_poem=True,
         type="haiku",
         confidence=0.95,
+        extracted_text="元の作品",
         normalized_lines=["整形された句"],
     )
     ai = FakeAI(classification, _review())
     composer = FakeComposer()
     service = PoemAnalysisService(ai=ai, composer=composer)
 
-    result = await service.analyze("元の作品")
+    result = await service.analyze("前置きの会話。元の作品。後置きの説明")
 
     assert isinstance(result, AnalysisResult)
     assert result is not None
     assert result.classification is classification
     assert result.review is ai.review_result
     assert result.image_bytes == b"png-bytes"
-    assert ai.classify_calls == ["元の作品"]
-    assert ai.review_calls == [("元の作品", classification)]
+    assert ai.classify_calls == ["前置きの会話。元の作品。後置きの説明"]
+    assert ai.review_calls == [
+        ("前置きの会話。元の作品。後置きの説明", classification)
+    ]
     assert composer.calls == ["元の作品"]
+
+
+@pytest.mark.asyncio
+async def test_target_without_an_extracted_text_stops_before_review() -> None:
+    classification = Classification(
+        is_poem=True,
+        type="senryu",
+        confidence=0.95,
+        extracted_text="",
+        normalized_lines=["候補"],
+    )
+    ai = FakeAI(classification, _review())
+    composer = FakeComposer()
+    service = PoemAnalysisService(ai=ai, composer=composer)
+
+    assert await service.analyze("候補") is None
+    assert ai.review_calls == []
+    assert composer.calls == []
+
+
+@pytest.mark.asyncio
+async def test_non_contiguous_extraction_is_discarded_without_a_second_call() -> None:
+    classification = Classification(
+        is_poem=True,
+        type="senryu",
+        confidence=0.95,
+        extracted_text="整形された句",
+        normalized_lines=["整形された句"],
+    )
+    ai = FakeAI(classification, _review())
+    composer = FakeComposer()
+    service = PoemAnalysisService(ai=ai, composer=composer)
+
+    assert await service.analyze("元の作品") is None
+    assert ai.review_calls == []
+    assert composer.calls == []

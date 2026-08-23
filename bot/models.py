@@ -16,13 +16,14 @@ class PoemType(StrEnum):
 
 
 class Classification(BaseModel):
-    """Structured result for deciding whether a message is a target poem."""
+    """Structured result for detecting and extracting a poem inside a message."""
 
     model_config = ConfigDict(extra="forbid")
 
     is_poem: bool
     type: PoemType
     confidence: float = Field(ge=0.0, le=1.0)
+    extracted_text: str
     normalized_lines: list[str] = Field(min_length=1)
 
     @field_validator("normalized_lines")

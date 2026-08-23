@@ -12,6 +12,7 @@ def test_format_reply_omits_type_and_original_text_but_keeps_review_and_ratings(
         is_poem=True,
         type="senryu",
         confidence=0.9,
+        extracted_text="元の\n作品",
         normalized_lines=["normalized"],
     )
     review = Review(

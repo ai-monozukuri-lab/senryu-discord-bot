@@ -91,6 +91,8 @@ ruff check bot tests
 
 通常文でも一次判定の OpenAI 呼び出しが 1 回発生し、対象作品では判定＋講評の最大 2 回が発生する。API コストとレート制限に配慮し、テスト用チャンネル以外で大量投稿しない。画像背景は API 生成せず、`assets/senryu_template.png` に Pillow で本文を合成する。
 
+メッセージ全体が詩でなくても、内部に短詩らしい連続部分があれば、その部分だけが `extracted_text` として講評・画像合成の対象になる。抽出文字列は元投稿から変更せず、前後の会話文は画像・講評へ渡さない。
+
 各 Responses API 呼び出し後に、サーバーログへ `event=openai_usage` の JSON 1 行が出る。`operation`、モデル、input/output/total token、cached/cache-write/reasoning token、`estimated_cost_usd` を含むが、投稿本文・プロンプト・秘密値は含まない。料金表にないモデルは `pricing_known=false`、金額 `null` で記録する。
 
 ```text
