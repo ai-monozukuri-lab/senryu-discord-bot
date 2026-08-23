@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
 from .ai import OpenAIAnalyzer
-from .config import ConfigurationError, Settings
+from .config import Settings
 from .dedupe import MessageDeduplicator
 from .discord_bot import SenryuBot
 from .image import TemplateImageComposer
@@ -19,15 +19,12 @@ from .usage import PricingTable
 
 def create_bot(settings: Settings) -> SenryuBot:
     client = AsyncOpenAI(api_key=settings.openai_api_key)
-    try:
-        pricing_table = PricingTable.from_json(settings.openai_pricing_json)
-    except ValueError as exc:
-        raise ConfigurationError(str(exc)) from exc
     analyzer = OpenAIAnalyzer(
         client=client,
         classification_model=settings.classification_model,
         review_model=settings.review_model,
-        pricing_table=pricing_table,
+        reasoning_effort=settings.reasoning_effort,
+        pricing_table=PricingTable(),
     )
     composer = TemplateImageComposer(
         template_path=settings.image_template_path,

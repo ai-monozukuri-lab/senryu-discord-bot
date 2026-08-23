@@ -7,6 +7,15 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
+DEFAULT_CLASSIFICATION_MODEL = "gpt-5.6-luna"
+DEFAULT_REVIEW_MODEL = "gpt-5.6-luna"
+DEFAULT_REASONING_EFFORT = "max"
+DEFAULT_IMAGE_TEMPLATE_PATH = (
+    Path(__file__).resolve().parent.parent / "assets" / "senryu_template.png"
+)
+DEFAULT_DEDUP_TTL_SECONDS = 15 * 60
+DEFAULT_DEDUP_MAX_ENTRIES = 10_000
+
 
 class ConfigurationError(ValueError):
     """Raised when a required or numeric setting is invalid."""
@@ -16,15 +25,13 @@ class ConfigurationError(ValueError):
 class Settings:
     discord_token: str
     openai_api_key: str
-    classification_model: str = "gpt-5.6"
-    review_model: str = "gpt-5.6"
-    openai_pricing_json: str | None = None
-    image_template_path: Path = (
-        Path(__file__).resolve().parent.parent / "assets" / "senryu_template.png"
-    )
+    classification_model: str = DEFAULT_CLASSIFICATION_MODEL
+    review_model: str = DEFAULT_REVIEW_MODEL
+    reasoning_effort: str = DEFAULT_REASONING_EFFORT
+    image_template_path: Path = DEFAULT_IMAGE_TEMPLATE_PATH
     font_path: Path | None = None
-    dedup_ttl_seconds: float = 15 * 60
-    dedup_max_entries: int = 10_000
+    dedup_ttl_seconds: float = DEFAULT_DEDUP_TTL_SECONDS
+    dedup_max_entries: int = DEFAULT_DEDUP_MAX_ENTRIES
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> Settings:
@@ -36,44 +43,14 @@ class Settings:
                 raise ConfigurationError(f"{name} is required")
             return value
 
-        def positive_float(name: str, default: float) -> float:
-            raw = values.get(name)
-            if raw is None or not raw.strip():
-                return default
-            try:
-                parsed = float(raw)
-            except ValueError as exc:
-                raise ConfigurationError(f"{name} must be a positive number") from exc
-            if parsed <= 0:
-                raise ConfigurationError(f"{name} must be a positive number")
-            return parsed
-
-        def positive_int(name: str, default: int) -> int:
-            raw = values.get(name)
-            if raw is None or not raw.strip():
-                return default
-            try:
-                parsed = int(raw)
-            except ValueError as exc:
-                raise ConfigurationError(f"{name} must be a positive integer") from exc
-            if parsed <= 0:
-                raise ConfigurationError(f"{name} must be a positive integer")
-            return parsed
-
-        font_value = values.get("FONT_PATH", "").strip()
-        template_value = values.get("IMAGE_TEMPLATE_PATH", "").strip()
-        pricing_value = values.get("OPENAI_PRICING_JSON", "").strip()
-        default_template = Path(__file__).resolve().parent.parent / "assets" / "senryu_template.png"
         return cls(
             discord_token=required("DISCORD_TOKEN"),
             openai_api_key=required("OPENAI_API_KEY"),
-            classification_model=(
-                values.get("OPENAI_CLASSIFICATION_MODEL", "gpt-5.6").strip() or "gpt-5.6"
-            ),
-            review_model=values.get("OPENAI_REVIEW_MODEL", "gpt-5.6").strip() or "gpt-5.6",
-            openai_pricing_json=pricing_value or None,
-            image_template_path=Path(template_value or default_template),
-            font_path=Path(font_value) if font_value else None,
-            dedup_ttl_seconds=positive_float("DEDUP_TTL_SECONDS", 15 * 60),
-            dedup_max_entries=positive_int("DEDUP_MAX_ENTRIES", 10_000),
+            classification_model=DEFAULT_CLASSIFICATION_MODEL,
+            review_model=DEFAULT_REVIEW_MODEL,
+            reasoning_effort=DEFAULT_REASONING_EFFORT,
+            image_template_path=DEFAULT_IMAGE_TEMPLATE_PATH,
+            font_path=None,
+            dedup_ttl_seconds=DEFAULT_DEDUP_TTL_SECONDS,
+            dedup_max_entries=DEFAULT_DEDUP_MAX_ENTRIES,
         )

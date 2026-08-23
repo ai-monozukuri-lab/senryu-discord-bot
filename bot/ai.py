@@ -51,14 +51,16 @@ class OpenAIAnalyzer:
         self,
         *,
         client: Any,
-        classification_model: str = "gpt-5.6",
-        review_model: str = "gpt-5.6",
+        classification_model: str = "gpt-5.6-luna",
+        review_model: str = "gpt-5.6-luna",
+        reasoning_effort: str = "max",
         pricing_table: PricingTable | None = None,
         logger: logging.Logger | None = None,
     ) -> None:
         self._client = client
         self._classification_model = classification_model
         self._review_model = review_model
+        self._reasoning_effort = reasoning_effort
         self._pricing_table = pricing_table or PricingTable()
         self._logger = logger or logging.getLogger(__name__)
 
@@ -71,6 +73,7 @@ class OpenAIAnalyzer:
                     {"role": "user", "content": f"<投稿本文>\n{text}\n</投稿本文>"},
                 ],
                 text_format=Classification,
+                reasoning={"effort": self._reasoning_effort},
             )
             log_response_usage(
                 response,
@@ -98,6 +101,7 @@ class OpenAIAnalyzer:
                     {"role": "user", "content": prompt},
                 ],
                 text_format=Review,
+                reasoning={"effort": self._reasoning_effort},
             )
             log_response_usage(
                 response,

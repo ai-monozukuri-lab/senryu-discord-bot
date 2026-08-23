@@ -42,12 +42,11 @@ def test_unknown_model_has_no_cost_estimate() -> None:
     assert PricingTable({}).estimate("unknown-model", _usage()) is None
 
 
-def test_custom_json_pricing_overrides_defaults() -> None:
-    table = PricingTable.from_json(
-        '{"custom-model":{"input_per_million":1,"cached_input_per_million":0.1,"output_per_million":2}}'
-    )
+def test_luna_has_the_builtin_cost_estimate() -> None:
+    estimate = PricingTable().estimate("gpt-5.6-luna", _usage())
 
-    assert table.estimate("custom-model", _usage()).estimated_cost_usd == 0.0013225
+    assert estimate is not None
+    assert estimate.estimated_cost_usd == 0.0004245
 
 
 def test_log_response_usage_emits_json_without_prompt_content(caplog) -> None:

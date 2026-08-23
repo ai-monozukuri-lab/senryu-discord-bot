@@ -49,7 +49,7 @@ DISCORD_TOKEN=開発用Discord Bot Token
 OPENAI_API_KEY=OpenAI API key
 ```
 
-モデルや TTL は `.env.local.example` の既定値を必要に応じて変更する。`.env.local` は `.gitignore` と `.dockerignore` で除外され、`bot.main` は既存のシェル環境変数を `.env.local` より優先する。Token や API キーをシェル履歴、スクリーンショット、Git 管理ファイルへ残さない。値を変更したら、起動中のプロセスを停止して再起動する。
+モデル、推論 effort、TTL、テンプレートパス、料金表はコード内の既定値を使う。`.env.local` に設定するのは `DISCORD_TOKEN` と `OPENAI_API_KEY` だけである。`.env.local` は `.gitignore` と `.dockerignore` で除外され、`bot.main` は既存のシェル環境変数を `.env.local` より優先する。Token や API キーをシェル履歴、スクリーンショット、Git 管理ファイルへ残さない。値を変更したら、起動中のプロセスを停止して再起動する。
 
 ## 3. Bot を起動する
 
@@ -94,10 +94,10 @@ ruff check bot tests
 各 Responses API 呼び出し後に、サーバーログへ `event=openai_usage` の JSON 1 行が出る。`operation`、モデル、input/output/total token、cached/cache-write/reasoning token、`estimated_cost_usd` を含むが、投稿本文・プロンプト・秘密値は含まない。料金表にないモデルは `pricing_known=false`、金額 `null` で記録する。
 
 ```text
-openai_usage {"event":"openai_usage","operation":"classification","model":"gpt-5.6","input_tokens":123,"output_tokens":45,"total_tokens":168,"estimated_cost_usd":0.001965}
+openai_usage {"event":"openai_usage","operation":"classification","model":"gpt-5.6-luna","input_tokens":123,"output_tokens":45,"total_tokens":168,"estimated_cost_usd":0.0000786}
 ```
 
-料金を上書きする場合は `.env.local` の `OPENAI_PRICING_JSON` にモデル別料金（USD/1M token）を JSON で指定する。料金は推定値であり、請求額の確定値ではない。
+料金表は `bot/usage.py` にコード化している。料金は推定値であり、請求額の確定値ではない。
 
 ## 6. Docker で本番に近い確認をする（任意）
 

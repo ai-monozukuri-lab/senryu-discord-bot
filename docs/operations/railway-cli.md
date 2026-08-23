@@ -117,16 +117,7 @@ printf '%s' "$OPENAI_API_KEY" \
 railway variable list --json
 ```
 
-必要に応じて次の任意変数を追加する。
-
-```bash
-railway variable set \
-  OPENAI_CLASSIFICATION_MODEL=gpt-5.6 \
-  OPENAI_REVIEW_MODEL=gpt-5.6 \
-  DEDUP_TTL_SECONDS=900 \
-  DEDUP_MAX_ENTRIES=10000 \
-  --skip-deploys
-```
+モデル、推論 effort、TTL、テンプレート、フォント、料金表などの非秘密設定は `bot/config.py` と `bot/usage.py` にコード化しているため、Railway Variables へ追加しない。
 
 Variables を設定しただけでデプロイを待たず、次のデプロイ手順でまとめて反映する。
 

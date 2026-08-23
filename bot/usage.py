@@ -50,10 +50,6 @@ class UsageEstimate:
 
 
 DEFAULT_PRICING: dict[str, ModelPricing] = {
-    # The gpt-5.6 alias currently routes to the Sol model.
-    "gpt-5.6": ModelPricing(5.0, 0.5, 30.0),
-    "gpt-5.6-sol": ModelPricing(5.0, 0.5, 30.0),
-    "gpt-5.6-terra": ModelPricing(2.0, 0.2, 12.0),
     "gpt-5.6-luna": ModelPricing(0.2, 0.02, 1.2),
 }
 
@@ -79,36 +75,6 @@ class PricingTable:
         self._pricing = dict(DEFAULT_PRICING)
         if pricing:
             self._pricing.update(pricing)
-
-    @classmethod
-    def from_json(cls, raw: str | None) -> PricingTable:
-        """Merge optional JSON pricing overrides into the built-in table."""
-
-        if not raw or not raw.strip():
-            return cls()
-        try:
-            decoded = json.loads(raw)
-        except json.JSONDecodeError as exc:
-            raise ValueError("OPENAI_PRICING_JSON must be valid JSON") from exc
-        if not isinstance(decoded, dict):
-            raise ValueError("OPENAI_PRICING_JSON must be a JSON object")
-
-        overrides: dict[str, ModelPricing] = {}
-        for model, values in decoded.items():
-            if not isinstance(model, str) or not model.strip() or not isinstance(values, dict):
-                raise ValueError("each pricing entry must map a model name to an object")
-            try:
-                overrides[model] = ModelPricing(
-                    input_per_million=values["input_per_million"],
-                    cached_input_per_million=values["cached_input_per_million"],
-                    output_per_million=values["output_per_million"],
-                )
-            except KeyError as exc:
-                raise ValueError(
-                    "pricing entries require input_per_million, "
-                    "cached_input_per_million, and output_per_million"
-                ) from exc
-        return cls(overrides)
 
     def resolve(
         self,

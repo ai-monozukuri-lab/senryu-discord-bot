@@ -36,15 +36,7 @@ Railway は実使用量で課金し、Replica Limits は急な使用量の上限
 - `DISCORD_TOKEN`
 - `OPENAI_API_KEY`
 
-任意:
-
-- `OPENAI_CLASSIFICATION_MODEL`（既定 `gpt-5.6`）
-- `OPENAI_REVIEW_MODEL`（既定 `gpt-5.6`）
-- `OPENAI_PRICING_JSON`（モデル別料金の JSON 上書き。未指定時は組み込み価格表）
-- `IMAGE_TEMPLATE_PATH`（Docker 既定 `/app/assets/senryu_template.png`）
-- `FONT_PATH`（未指定時は macOS ヒラギノ / Linux Noto CJK を探索）
-- `DEDUP_TTL_SECONDS`（既定 900）
-- `DEDUP_MAX_ENTRIES`（既定 10000）
+任意のアプリケーション設定は環境変数に置かず、モデル、推論 effort、TTL、テンプレート、フォント候補、料金表をコード内に固定している。
 
 Discord Developer Portal では Message Content Intent を有効にし、Bot の招待時にもメッセージ閲覧権限を与える。
 
@@ -75,7 +67,7 @@ workflow は Railway CLI に `RAILWAY_TOKEN` を渡し、`RAILWAY_PROJECT_ID`、
 railway logs --service "$RAILWAY_SERVICE_ID" --environment production -n 100
 ```
 
-料金表にないモデルは `pricing_known=false` と `estimated_cost_usd=null` で記録し、Bot の処理は継続する。価格は推定値で、OpenAI の標準テキスト token 料金に基づく。[Responses API usage](https://developers.openai.com/api/reference/cli/resources/responses/methods/create)、[GPT-5.6 Sol pricing](https://developers.openai.com/api/docs/models/gpt-5.6-sol)
+料金表にないモデルは `pricing_known=false` と `estimated_cost_usd=null` で記録し、Bot の処理は継続する。価格は推定値で、OpenAI の標準テキスト token 料金に基づく。[Responses API usage](https://developers.openai.com/api/reference/cli/resources/responses/methods/create)、[GPT-5.6 Luna pricing](https://developers.openai.com/api/docs/models/gpt-5.6-luna)
 
 ## 障害時の確認
 

@@ -92,7 +92,7 @@ SDK は `AsyncOpenAI` を使い、実行時のモデル名は環境変数で差�
 - 元作品本文を行単位で保持し、幅に合わせて折り返す。文字列の省略や AI による正規化は行わない。
 - 画像生成で作成したテンプレートは、生成り色の和紙、紙繊維、控えめな木製額縁、水墨画風の淡い背景、余白、抽象的な赤い落款を含む。
 - 生成り色の紙面を損なわない濃色で本文を中央寄せし、可読性のために控えめな影または半透明の下地を使う。
-- 日本語フォントは `FONT_PATH` を優先し、未指定時は macOS のヒラギノと Linux の Noto CJK を探索する。Docker イメージには日本語フォントを導入する。
+- 日本語フォントはコード内の候補から macOS のヒラギノと Linux の Noto CJK を探索する。Docker イメージには日本語フォントを導入する。フォントパスは環境変数で変更しない。
 - Pillow の合成結果は PNG バイト列として返す。ローカルディスクへ永続化しない。
 
 ## 7. 重複処理防止
@@ -111,15 +111,7 @@ SDK は `AsyncOpenAI` を使い、実行時のモデル名は環境変数で差�
 - `DISCORD_TOKEN`
 - `OPENAI_API_KEY`
 
-任意（既定値あり）:
-
-- `OPENAI_CLASSIFICATION_MODEL`
-- `OPENAI_REVIEW_MODEL`
-- `OPENAI_PRICING_JSON`
-- `IMAGE_TEMPLATE_PATH`
-- `FONT_PATH`
-- `DEDUP_TTL_SECONDS`
-- `DEDUP_MAX_ENTRIES`
+任意のアプリケーション設定は環境変数に置かず、`bot/config.py` と `bot/usage.py` にコード化する。
 
 起動コマンドは `python -m bot.main`。Dockerfile は Python 3.12 系を使い、`discord.py`、`openai`、`Pillow`、`pydantic` をインストールする。GitHub Actions は `workflow_dispatch` の手動実行時に対象テストを実行してから、Project・Environment・任意の Service を明示した Railway CLI の `railway up --ci` を実行する。`RAILWAY_ENVIRONMENT_ID` は未設定時に `production`、`RAILWAY_SERVICE_ID` は Service が 1 つなら省略可能とする。
 
@@ -134,7 +126,7 @@ SDK は `AsyncOpenAI` を使い、実行時のモデル名は環境変数で差�
 
 ## 10. 確定した実装判断
 
-- OpenAI の既定モデルは API 識別子 `gpt-5.6` とする。一次判定・二次生成とも環境変数で上書きできる。
+- OpenAI のモデルは API 識別子 `gpt-5.6-luna`、Responses API の `reasoning.effort` は `max` に固定する。一次判定・二次生成とも環境変数で上書きしない。
 - 背景画像は固定テンプレートを使用し、画像生成 API は呼び出さない。
 - 画像合成に失敗した場合は全体を返信せず、ログだけを残す。
 - 空本文・画像だけの投稿は AI に送らず無視する。
