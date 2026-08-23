@@ -120,7 +120,7 @@ SDK は `AsyncOpenAI` を使い、実行時のモデル名は環境変数で差�
 - `DEDUP_TTL_SECONDS`
 - `DEDUP_MAX_ENTRIES`
 
-起動コマンドは `python -m bot.main`。Dockerfile は Python 3.12 系を使い、`discord.py`、`openai`、`Pillow`、`pydantic` をインストールする。GitHub Actions は `main` push 時に対象テストを実行してから Railway CLI の `railway up --ci --project "$RAILWAY_PROJECT_ID"` を実行する。
+起動コマンドは `python -m bot.main`。Dockerfile は Python 3.12 系を使い、`discord.py`、`openai`、`Pillow`、`pydantic` をインストールする。GitHub Actions は `main` push 時に対象テストを実行してから、Project・Environment・任意の Service を明示した Railway CLI の `railway up --ci` を実行する。`RAILWAY_ENVIRONMENT_ID` は未設定時に `production`、`RAILWAY_SERVICE_ID` は Service が 1 つなら省略可能とする。
 
 ## 9. テスト境界
 

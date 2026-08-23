@@ -9,6 +9,8 @@ read_when:
 
 # Railway 運用手順
 
+CLI での初回プロジェクト作成、既存プロジェクトへの接続、変数設定、デプロイ確認は [Railway CLI セットアップ手順](railway-cli.md) を参照する。
+
 ## Railway サービス
 
 リポジトリの `Dockerfile` を使う常時実行サービスを 1 つだけ作成する。Start Command は Dockerfile の `python -m bot.main` を使う。Discord Gateway の WebSocket 接続を維持するため、スリープする Web サービスとして構成しない。
@@ -41,8 +43,10 @@ Discord Developer Portal では Message Content Intent を有効にし、Bot の
 
 - `RAILWAY_TOKEN`
 - `RAILWAY_PROJECT_ID`
+- `RAILWAY_ENVIRONMENT_ID`（未登録時は workflow が `production` を使用）
+- `RAILWAY_SERVICE_ID`（Service が 1 つだけなら省略可能）
 
-GitHub Actions は Railway CLI に `RAILWAY_TOKEN` を渡し、`RAILWAY_PROJECT_ID` の production サービスへ `railway up --ci` を実行する。
+GitHub Actions は Railway CLI に `RAILWAY_TOKEN` を渡し、`RAILWAY_PROJECT_ID`、`RAILWAY_ENVIRONMENT_ID`、任意の `RAILWAY_SERVICE_ID` を明示して `railway up --ci` を実行する。`RAILWAY_TOKEN` は対象 Project の Project Token を使う。
 
 ## 障害時の確認
 

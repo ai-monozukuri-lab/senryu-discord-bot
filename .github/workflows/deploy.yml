@@ -32,7 +32,15 @@ jobs:
         run: npm install -g @railway/cli
 
       - name: Deploy
-        run: railway up --ci --project "$RAILWAY_PROJECT_ID"
+        shell: bash
+        run: |
+          deploy_args=(--ci --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT_ID")
+          if [[ -n "${RAILWAY_SERVICE_ID:-}" ]]; then
+            deploy_args+=(--service "$RAILWAY_SERVICE_ID")
+          fi
+          railway up "${deploy_args[@]}"
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT_ID: ${{ secrets.RAILWAY_ENVIRONMENT_ID || 'production' }}
+          RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}

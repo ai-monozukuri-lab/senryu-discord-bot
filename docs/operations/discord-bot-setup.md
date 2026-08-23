@@ -76,7 +76,7 @@ export OPENAI_API_KEY='ここにOpenAI API key'
    - `DISCORD_TOKEN`
    - `OPENAI_API_KEY`
 
-4. 必要なら [Railway 運用手順](railway.md) の任意変数を追加する。
+4. 必要なら [Railway 運用手順](railway.md) の任意変数を追加する。CLI で Project、Service、Variables を作成・設定する場合は [Railway CLI セットアップ手順](railway-cli.md) を参照する。
 5. Deploy 後のログで Bot がオンラインになったことを確認する。
 
 production は 1 インスタンスにする。重複防止用の `message.id` TTL キャッシュはプロセス内メモリだけに存在するため、複数インスタンスでは同じ投稿を二重処理する可能性がある。
@@ -87,6 +87,8 @@ production は 1 インスタンスにする。重複防止用の `message.id` T
 
 - `RAILWAY_TOKEN`
 - `RAILWAY_PROJECT_ID`
+- `RAILWAY_ENVIRONMENT_ID`（省略時は `production`）
+- `RAILWAY_SERVICE_ID`（Service が 1 つだけなら省略可能）
 
 Secrets に `DISCORD_TOKEN` や `OPENAI_API_KEY` を置く必要はない。これらは Railway Service の Variables にだけ登録する。
 
