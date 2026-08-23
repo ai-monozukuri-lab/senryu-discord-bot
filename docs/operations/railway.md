@@ -33,6 +33,8 @@ production のインスタンスは原則 1 つにする。重複処理キャッ
 
 Discord Developer Portal では Message Content Intent を有効にし、Bot の招待時にもメッセージ閲覧権限を与える。
 
+初回のアプリ作成、Token 発行、招待 URL、チャンネル権限は [Discord Bot セットアップ手順](discord-bot-setup.md) を参照する。
+
 ## GitHub Actions Secrets
 
 `main` ブランチへの push で `.github/workflows/deploy.yml` がテスト、lint、Railway デプロイを順に実行する。リポジトリ Secrets に次を登録する。
