@@ -15,8 +15,11 @@ def _make_template(path) -> None:
 def test_compose_returns_a_square_png_and_wraps_the_original_text(tmp_path, monkeypatch) -> None:
     template_path = tmp_path / "template.png"
     _make_template(template_path)
-    monkeypatch.setattr(image_module.ImageFont, "truetype", lambda *args, **kwargs: ImageFont.load_default())
-    composer = TemplateImageComposer(template_path=template_path, font_path=tmp_path / "font.ttf")
+    font_path = tmp_path / "font.ttf"
+    font_path.touch()
+    builtin_font = ImageFont.load_default()
+    monkeypatch.setattr(image_module.ImageFont, "truetype", lambda *args, **kwargs: builtin_font)
+    composer = TemplateImageComposer(template_path=template_path, font_path=font_path)
 
     result = composer.compose("first line\nsecond line")
 

@@ -23,5 +23,4 @@ def test_oldest_entries_are_evicted_when_the_capacity_is_reached() -> None:
     assert dedupe.check_and_mark("third") is True
 
     assert dedupe.check_and_mark("first") is True
-    assert dedupe.check_and_mark("second") is False
-
+    assert dedupe.check_and_mark("third") is False
