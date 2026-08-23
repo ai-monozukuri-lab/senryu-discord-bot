@@ -39,14 +39,20 @@ Discord Developer Portal では Message Content Intent を有効にし、Bot の
 
 ## GitHub Actions Secrets
 
-`main` ブランチへの push で `.github/workflows/deploy.yml` がテスト、lint、Railway デプロイを順に実行する。リポジトリ Secrets に次を登録する。
+`.github/workflows/deploy.yml` は `workflow_dispatch` による手動実行で、テスト、lint、Railway デプロイを順に実行する。リポジトリ Secrets に次を登録する。
 
 - `RAILWAY_TOKEN`
 - `RAILWAY_PROJECT_ID`
 - `RAILWAY_ENVIRONMENT_ID`（未登録時は workflow が `production` を使用）
 - `RAILWAY_SERVICE_ID`（Service が 1 つだけなら省略可能）
 
-GitHub Actions は Railway CLI に `RAILWAY_TOKEN` を渡し、`RAILWAY_PROJECT_ID`、`RAILWAY_ENVIRONMENT_ID`、任意の `RAILWAY_SERVICE_ID` を明示して `railway up --ci` を実行する。`RAILWAY_TOKEN` は対象 Project の Project Token を使う。
+GitHub Actions の画面で `Deploy` workflow の `Run workflow` を押すか、次の CLI で明示的に実行する。
+
+```bash
+gh workflow run Deploy --repo ai-monozukuri-lab/senryu-discord-bot --ref main
+```
+
+workflow は Railway CLI に `RAILWAY_TOKEN` を渡し、`RAILWAY_PROJECT_ID`、`RAILWAY_ENVIRONMENT_ID`、任意の `RAILWAY_SERVICE_ID` を明示して `railway up --ci` を実行する。`RAILWAY_TOKEN` は対象 Project の Project Token を使う。
 
 ## 障害時の確認
 

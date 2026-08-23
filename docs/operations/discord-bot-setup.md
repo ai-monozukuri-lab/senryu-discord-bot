@@ -83,7 +83,7 @@ production は 1 インスタンスにする。重複防止用の `message.id` T
 
 ## 7. GitHub Actions からデプロイする
 
-`.github/workflows/deploy.yml` は `main` への push をトリガーに、テスト、lint、Railway CLI デプロイを実行する。GitHub リポジトリの `Settings` → `Secrets and variables` → `Actions` に次を登録する。
+`.github/workflows/deploy.yml` は GitHub Actions の `Run workflow` または `gh workflow run` による手動実行で、テスト、lint、Railway CLI デプロイを実行する。GitHub リポジトリの `Settings` → `Secrets and variables` → `Actions` に次を登録する。
 
 - `RAILWAY_TOKEN`
 - `RAILWAY_PROJECT_ID`

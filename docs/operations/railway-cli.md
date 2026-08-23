@@ -160,7 +160,7 @@ Dashboard を開く場合は `railway open` を使う。デプロイ失敗時は
 
 ## 8. GitHub Actions へ接続する
 
-`.github/workflows/deploy.yml` は `main` push 後にテスト、lint、Railway CLI デプロイを実行する。次の GitHub Secrets を登録する。
+`.github/workflows/deploy.yml` は GitHub Actions の `Run workflow` または `gh workflow run` による手動実行で、テスト、lint、Railway CLI デプロイを実行する。次の GitHub Secrets を登録する。
 
 - `RAILWAY_TOKEN`: 対象 Project の Project Token
 - `RAILWAY_PROJECT_ID`: 対象 Project ID
@@ -168,6 +168,10 @@ Dashboard を開く場合は `railway open` を使う。デプロイ失敗時は
 - `RAILWAY_SERVICE_ID`: Bot Service ID（Service が 1 つだけなら省略可能）
 
 GitHub Actions には `DISCORD_TOKEN` と `OPENAI_API_KEY` を渡さない。これらは Railway Service Variables に設定済みであることが前提。Deploy 前に対象 IDs を確認し、Project Token の権限を対象 Project に限定する。
+
+```bash
+gh workflow run Deploy --repo ai-monozukuri-lab/senryu-discord-bot --ref main
+```
 
 ## 9. 私が CLI で実行できる範囲
 
