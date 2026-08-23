@@ -29,10 +29,8 @@ def format_reply(classification: Classification, _original_text: str, review: Re
     rating_lines = "\n".join(f"{label}: {value}" for label, value in stars.items())
     return (
         f"{type_label}を検出しました！\n"
-        f"評価\n"
-        f"{rating_lines}\n"
         f"総合評価: {format_stars(review.overall)}\n"
-        f"講評\n"
+        f"{rating_lines}\n"
         f"{review.comment}"
     )
 

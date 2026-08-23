@@ -75,7 +75,9 @@ async def test_bot_replies_once_for_a_target_and_suppresses_duplicates() -> None
     assert service.calls == ["春の句"]
     assert len(message.replies) == 1
     assert message.replies[0]["content"].splitlines()[0] == "俳句を検出しました！"
-    assert "評価" in message.replies[0]["content"]
+    assert message.replies[0]["content"].splitlines()[1].startswith("総合評価:")
+    assert "\n評価\n" not in message.replies[0]["content"]
+    assert "\n講評\n" not in message.replies[0]["content"]
     assert "作品種別" not in message.replies[0]["content"]
     assert "作品:" not in message.replies[0]["content"]
     assert "講評です。" in message.replies[0]["content"]
