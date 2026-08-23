@@ -23,7 +23,7 @@ python -m venv .venv
 
 ```bash
 .venv/bin/python -m pytest
-.venv/bin/ruff check bot tests scripts
+.venv/bin/ruff check bot tests
 ```
 
 テストは OpenAI、Discord Gateway、Railway へ接続せず、AI アダプタと Discord メッセージを fake に差し替える。対象テストが検証する範囲は、型契約、星表示、TTL 重複防止、固定テンプレート合成、一次判定後の呼び出し回数、返信本文・添付ファイルである。
@@ -39,10 +39,9 @@ python -m venv .venv
 
 ## 固定テンプレートの更新
 
-背景は OpenAI の画像 API ではなく、`assets/senryu_template.png` を使う。デザインを変更するときは、手作業で PNG だけを上書きせず、`scripts/create_template.py` を修正して次を実行する。
+背景は Bot 実行時に API 生成せず、画像生成ツールで作成した `assets/senryu_template.png` を使う。生成時のプロンプトと不変条件は [`docs/design/senryu-template.md`](../design/senryu-template.md) に記録している。デザインを変更するときは画像生成で新しい PNG を作成し、既存ファイルを置き換えたうえで次を実行する。
 
 ```bash
-python scripts/create_template.py
 python -m pytest tests/test_image.py
 ```
 
