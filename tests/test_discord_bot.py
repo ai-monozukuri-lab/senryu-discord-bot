@@ -33,6 +33,7 @@ def _result() -> AnalysisResult:
             is_poem=True,
             type="haiku",
             confidence=0.9,
+            source_text="句",
             extracted_text="句",
             normalized_lines=["句"],
         ),

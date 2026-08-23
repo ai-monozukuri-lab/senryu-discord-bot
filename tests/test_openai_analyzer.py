@@ -34,6 +34,7 @@ def _classification() -> Classification:
         is_poem=True,
         type="senryu",
         confidence=0.8,
+        source_text="句",
         extracted_text="句",
         normalized_lines=["句"],
     )
@@ -74,7 +75,10 @@ async def test_analyzer_makes_classification_and_review_as_separate_calls() -> N
     assert client.responses.calls[1]["reasoning"] == {"effort": "max"}
     assert "image_generation" not in str(client.responses.calls[1])
     assert "extracted_text" in client.responses.calls[0]["text_format"].model_fields
-    assert "連続した文字列" in client.responses.calls[0]["input"][0]["content"]
+    classification_prompt = client.responses.calls[0]["input"][0]["content"]
+    assert "連続した文字列" in classification_prompt
+    assert "作文もちゃチャット済ますGPT" in classification_prompt
+    assert "メルカリで妻が売るのは俺の物" in classification_prompt
 
 
 @pytest.mark.asyncio

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class PoemType(StrEnum):
@@ -23,15 +23,15 @@ class Classification(BaseModel):
     is_poem: bool
     type: PoemType
     confidence: float = Field(ge=0.0, le=1.0)
+    source_text: str
     extracted_text: str
     normalized_lines: list[str] = Field(min_length=1)
 
-    @field_validator("normalized_lines")
-    @classmethod
-    def lines_must_contain_text(cls, lines: list[str]) -> list[str]:
-        if any(not line.strip() for line in lines):
-            raise ValueError("normalized_lines must not contain blank lines")
-        return lines
+    @model_validator(mode="after")
+    def target_lines_must_contain_text(self) -> Classification:
+        if self.is_target and any(not line.strip() for line in self.normalized_lines):
+            raise ValueError("target normalized_lines must not contain blank lines")
+        return self
 
     @property
     def is_target(self) -> bool:

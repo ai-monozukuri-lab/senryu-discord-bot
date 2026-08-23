@@ -30,11 +30,7 @@ class PoemAnalysisService:
 
     async def analyze(self, text: str) -> AnalysisResult | None:
         classification = await self._ai.classify(text)
-        if (
-            not classification.is_target
-            or not classification.extracted_text
-            or classification.extracted_text not in text
-        ):
+        if not classification.is_target or not self._has_valid_extraction(text, classification):
             return None
 
         review = await self._ai.review(text, classification)
@@ -46,3 +42,16 @@ class PoemAnalysisService:
             review=review,
             image_bytes=image_bytes,
         )
+
+    @staticmethod
+    def _has_valid_extraction(text: str, classification: Classification) -> bool:
+        source_text = classification.source_text
+        extracted_text = classification.extracted_text
+        if not source_text or not extracted_text or source_text not in text:
+            return False
+        segments = extracted_text.split(" ")
+        if len(segments) != 3 or any(not segment for segment in segments):
+            return False
+        source_compact = "".join(source_text.split())
+        extracted_compact = "".join(extracted_text.split())
+        return source_compact == extracted_compact

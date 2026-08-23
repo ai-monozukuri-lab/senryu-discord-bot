@@ -9,6 +9,7 @@ def test_classification_marks_only_haiku_and_senryu_as_targets() -> None:
         is_poem=True,
         type="haiku",
         confidence=0.91,
+        source_text="古池や\n蛙飛び込む\n水の音",
         extracted_text="古池や\n蛙飛び込む\n水の音",
         normalized_lines=["古池や", "蛙飛び込む", "水の音"],
     )
@@ -16,6 +17,7 @@ def test_classification_marks_only_haiku_and_senryu_as_targets() -> None:
         is_poem=False,
         type="other",
         confidence=0.99,
+        source_text="",
         extracted_text="",
         normalized_lines=["これは説明です"],
     )
@@ -25,12 +27,26 @@ def test_classification_marks_only_haiku_and_senryu_as_targets() -> None:
     assert other.is_target is False
 
 
+def test_non_poem_may_return_an_empty_normalized_line() -> None:
+    result = Classification(
+        is_poem=False,
+        type="other",
+        confidence=0.99,
+        source_text="",
+        extracted_text="",
+        normalized_lines=[""],
+    )
+
+    assert result.is_target is False
+
+
 def test_classification_rejects_invalid_confidence_and_empty_lines() -> None:
     with pytest.raises(ValidationError):
         Classification(
             is_poem=True,
             type="senryu",
             confidence=1.1,
+            source_text="句",
             extracted_text="句",
             normalized_lines=["句"],
         )
@@ -40,6 +56,7 @@ def test_classification_rejects_invalid_confidence_and_empty_lines() -> None:
             is_poem=True,
             type="senryu",
             confidence=0.5,
+            source_text="句",
             extracted_text="句",
             normalized_lines=[],
         )

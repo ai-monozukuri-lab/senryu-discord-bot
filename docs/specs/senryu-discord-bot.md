@@ -36,14 +36,16 @@ Discord の新規投稿を受け取り、俳句・川柳・それに近い短詩
   "is_poem": true,
   "type": "senryu",
   "confidence": 0.91,
-  "extracted_text": "会話の途中の\n春の風",
+  "source_text": "作文もちゃチャット済ますGPT",
+  "extracted_text": "作文も ちゃチャット済ます GPT",
   "normalized_lines": ["第一句", "第二句", "第三句"]
 }
 ```
 
 - `type` は `haiku`、`senryu`、`other` のいずれか。
 - `confidence` は 0 以上 1 以下。
-- `extracted_text` は投稿全体から見つけた短詩らしい連続部分。元投稿内の文字列を一字も変更せず、対象外なら空文字列。
+- `source_text` は投稿全体から見つけた短詩らしい連続部分で、元投稿内の文字列を一字も変更しない。対象外なら空文字列。
+- `extracted_text` は `source_text` の文字だけを使い、575に近い3句をASCIIスペースで区切った表示用文字列。空白・改行だけを区切りとして整理できる。
 - `normalized_lines` は `extracted_text` を AI が鑑賞用に整理した行であり、画像に描く本文の正本ではない。
 - 対象作品は `is_poem == true` かつ `type in {haiku, senryu}` とする。
 
