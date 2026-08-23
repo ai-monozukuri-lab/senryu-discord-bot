@@ -28,12 +28,13 @@ python -m venv .venv
 
 実際の Discord Gateway に接続して開発する場合は [ローカル Bot 開発手順](local-bot.md) を使う。本番 Railway と同じ Bot Token を同時に起動しない。
 
-テストは OpenAI、Discord Gateway、Railway へ接続せず、AI アダプタと Discord メッセージを fake に差し替える。対象テストが検証する範囲は、型契約、星表示、TTL 重複防止、固定テンプレート合成、一次判定後の呼び出し回数、返信本文・添付ファイルである。
+テストは OpenAI、Discord Gateway、Railway へ接続せず、AI アダプタと Discord メッセージを fake に差し替える。対象テストが検証する範囲は、型契約、星表示、TTL 重複防止、固定テンプレート合成、一次判定後の呼び出し回数、usage/料金ログ、返信本文・添付ファイルである。
 
 ## コード境界
 
 - `bot/models.py`: OpenAI の構造化出力とアプリケーション結果の公開型。JSON キーの日本語 alias と 1〜5 の範囲を変更するときは `tests/test_models.py` を同時に更新する。
-- `bot/ai.py`: Responses API の一次判定・二次講評アダプタ。本文は XML 風の区切りでデータとして渡し、本文内の命令をプロンプト命令として扱わない。
+- `bot/ai.py`: Responses API の一次判定・二次講評アダプタ。本文は XML 風の区切りでデータとして渡し、本文内の命令をプロンプト命令として扱わない。各レスポンス後に `bot/usage.py` で usage と推定料金をログへ出すが、本文はログへ出さない。
+- `bot/usage.py`: Responses API の input/output/total、cached/cache-write/reasoning 内訳を抽出し、モデル別の USD/1M token 料金から推定額を計算する。未知モデルは金額 `null` で呼び出しを継続する。
 - `bot/service.py`: 「一次判定 → 対象時だけ二次講評 → Pillow 合成」の唯一のオーケストレーション境界。ここへ文字数や五・七・五のローカル判定を追加しない。
 - `bot/image.py`: 固定テンプレートへ元本文を正確に描く Pillow 層。`normalized_lines` は使わず、Discord 本文を正本とする。
 - `bot/discord_bot.py`: Bot 投稿・空本文・TTL 重複を除外し、対象結果だけを reply する。AI/合成エラー時は部分投稿を行わない。

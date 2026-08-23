@@ -40,6 +40,7 @@ Railway は実使用量で課金し、Replica Limits は急な使用量の上限
 
 - `OPENAI_CLASSIFICATION_MODEL`（既定 `gpt-5.6`）
 - `OPENAI_REVIEW_MODEL`（既定 `gpt-5.6`）
+- `OPENAI_PRICING_JSON`（モデル別料金の JSON 上書き。未指定時は組み込み価格表）
 - `IMAGE_TEMPLATE_PATH`（Docker 既定 `/app/assets/senryu_template.png`）
 - `FONT_PATH`（未指定時は macOS ヒラギノ / Linux Noto CJK を探索）
 - `DEDUP_TTL_SECONDS`（既定 900）
@@ -65,6 +66,16 @@ gh workflow run Deploy --repo ai-monozukuri-lab/senryu-discord-bot --ref main
 ```
 
 workflow は Railway CLI に `RAILWAY_TOKEN` を渡し、`RAILWAY_PROJECT_ID`、`RAILWAY_ENVIRONMENT_ID`、任意の `RAILWAY_SERVICE_ID` を明示して `railway up --ci` を実行する。`RAILWAY_TOKEN` は対象 Project の Project Token を使う。
+
+## OpenAI usage ログ
+
+各 OpenAI Responses API 呼び出し後に `openai_usage` JSON ログを出す。ログには処理種別、モデル、input/output/total token、キャッシュ・reasoning 内訳、推定 `estimated_cost_usd` が含まれる。投稿本文やプロンプトは含めない。Railway では次で確認できる。
+
+```bash
+railway logs --service "$RAILWAY_SERVICE_ID" --environment production -n 100
+```
+
+料金表にないモデルは `pricing_known=false` と `estimated_cost_usd=null` で記録し、Bot の処理は継続する。価格は推定値で、OpenAI の標準テキスト token 料金に基づく。[Responses API usage](https://developers.openai.com/api/reference/cli/resources/responses/methods/create)、[GPT-5.6 Sol pricing](https://developers.openai.com/api/docs/models/gpt-5.6-sol)
 
 ## 障害時の確認
 

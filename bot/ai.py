@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from pydantic import BaseModel
 
 from .models import Classification, Review
+from .usage import PricingTable, log_response_usage
 
 CLASSIFICATION_INSTRUCTIONS = """
 あなたは日本語の短詩を鑑賞する判定者です。
@@ -51,10 +53,14 @@ class OpenAIAnalyzer:
         client: Any,
         classification_model: str = "gpt-5.6",
         review_model: str = "gpt-5.6",
+        pricing_table: PricingTable | None = None,
+        logger: logging.Logger | None = None,
     ) -> None:
         self._client = client
         self._classification_model = classification_model
         self._review_model = review_model
+        self._pricing_table = pricing_table or PricingTable()
+        self._logger = logger or logging.getLogger(__name__)
 
     async def classify(self, text: str) -> Classification:
         try:
@@ -65,6 +71,13 @@ class OpenAIAnalyzer:
                     {"role": "user", "content": f"<投稿本文>\n{text}\n</投稿本文>"},
                 ],
                 text_format=Classification,
+            )
+            log_response_usage(
+                response,
+                operation="classification",
+                requested_model=self._classification_model,
+                pricing_table=self._pricing_table,
+                logger=self._logger,
             )
             return _extract_parsed(response, Classification)  # type: ignore[return-value]
         except AIServiceError:
@@ -85,6 +98,13 @@ class OpenAIAnalyzer:
                     {"role": "user", "content": prompt},
                 ],
                 text_format=Review,
+            )
+            log_response_usage(
+                response,
+                operation="review",
+                requested_model=self._review_model,
+                pricing_table=self._pricing_table,
+                logger=self._logger,
             )
             return _extract_parsed(response, Review)  # type: ignore[return-value]
         except AIServiceError:

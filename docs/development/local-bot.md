@@ -78,7 +78,7 @@ python -m pytest tests/test_models.py tests/test_dedupe.py tests/test_formatting
 ruff check bot tests
 ```
 
-これらのテストは Discord Gateway や OpenAI へ接続せず、fake の AI クライアント・メッセージを使う。プロンプトや Responses API の引数を変更した場合は `tests/test_openai_analyzer.py`、返信の見た目を変更した場合は `tests/test_formatting.py` と `tests/test_discord_bot.py`、画像を変更した場合は `tests/test_image.py` を先に実行する。
+これらのテストは Discord Gateway や OpenAI へ接続せず、fake の AI クライアント・メッセージを使う。プロンプトや Responses API の引数を変更した場合は `tests/test_openai_analyzer.py`、usage/料金ログを変更した場合は `tests/test_usage.py`、返信の見た目を変更した場合は `tests/test_formatting.py` と `tests/test_discord_bot.py`、画像を変更した場合は `tests/test_image.py` を先に実行する。
 
 ## 5. Discord でスモークテストする
 
@@ -90,6 +90,14 @@ ruff check bot tests
 4. 同じメッセージを Gateway が再送しても、短時間に二重返信されないことを確認する。
 
 通常文でも一次判定の OpenAI 呼び出しが 1 回発生し、対象作品では判定＋講評の最大 2 回が発生する。API コストとレート制限に配慮し、テスト用チャンネル以外で大量投稿しない。画像背景は API 生成せず、`assets/senryu_template.png` に Pillow で本文を合成する。
+
+各 Responses API 呼び出し後に、サーバーログへ `event=openai_usage` の JSON 1 行が出る。`operation`、モデル、input/output/total token、cached/cache-write/reasoning token、`estimated_cost_usd` を含むが、投稿本文・プロンプト・秘密値は含まない。料金表にないモデルは `pricing_known=false`、金額 `null` で記録する。
+
+```text
+openai_usage {"event":"openai_usage","operation":"classification","model":"gpt-5.6","input_tokens":123,"output_tokens":45,"total_tokens":168,"estimated_cost_usd":0.001965}
+```
+
+料金を上書きする場合は `.env.local` の `OPENAI_PRICING_JSON` にモデル別料金（USD/1M token）を JSON で指定する。料金は推定値であり、請求額の確定値ではない。
 
 ## 6. Docker で本番に近い確認をする（任意）
 

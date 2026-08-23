@@ -18,6 +18,7 @@ class Settings:
     openai_api_key: str
     classification_model: str = "gpt-5.6"
     review_model: str = "gpt-5.6"
+    openai_pricing_json: str | None = None
     image_template_path: Path = (
         Path(__file__).resolve().parent.parent / "assets" / "senryu_template.png"
     )
@@ -61,6 +62,7 @@ class Settings:
 
         font_value = values.get("FONT_PATH", "").strip()
         template_value = values.get("IMAGE_TEMPLATE_PATH", "").strip()
+        pricing_value = values.get("OPENAI_PRICING_JSON", "").strip()
         default_template = Path(__file__).resolve().parent.parent / "assets" / "senryu_template.png"
         return cls(
             discord_token=required("DISCORD_TOKEN"),
@@ -69,6 +71,7 @@ class Settings:
                 values.get("OPENAI_CLASSIFICATION_MODEL", "gpt-5.6").strip() or "gpt-5.6"
             ),
             review_model=values.get("OPENAI_REVIEW_MODEL", "gpt-5.6").strip() or "gpt-5.6",
+            openai_pricing_json=pricing_value or None,
             image_template_path=Path(template_value or default_template),
             font_path=Path(font_value) if font_value else None,
             dedup_ttl_seconds=positive_float("DEDUP_TTL_SECONDS", 15 * 60),

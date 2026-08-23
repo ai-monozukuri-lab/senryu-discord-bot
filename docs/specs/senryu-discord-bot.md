@@ -115,6 +115,7 @@ SDK は `AsyncOpenAI` を使い、実行時のモデル名は環境変数で差�
 
 - `OPENAI_CLASSIFICATION_MODEL`
 - `OPENAI_REVIEW_MODEL`
+- `OPENAI_PRICING_JSON`
 - `IMAGE_TEMPLATE_PATH`
 - `FONT_PATH`
 - `DEDUP_TTL_SECONDS`
@@ -129,6 +130,7 @@ SDK は `AsyncOpenAI` を使い、実行時のモデル名は環境変数で差�
 - 画像合成: 正方形 PNG、元本文の描画、フォント未発見時の明示的エラー。
 - AI サービス: 一次判定が対象外なら二次呼び出しを行わない、対象なら二次を一度だけ呼ぶ。
 - Discord ハンドラ: Bot 投稿・重複投稿の無視、対象外の無返信、対象作品の reply。
+- usage ログ: 各 OpenAI 応答の token 内訳と推定 USD、未知モデルの金額不明継続、本文非記録。
 
 ## 10. 確定した実装判断
 
